@@ -1,0 +1,99 @@
+version : "3.5"
+
+volumes :
+  mariadb:
+    name: mariadb
+    driver: local
+    driver_opts:
+      device: /home/zack/Desktop/Inception/Inception_42/srcs/maria
+      o: bind
+      type: none
+  wordpress:
+    name: wordpress
+    driver: local
+    driver_opts:
+      device: /home/zack/Desktop/Inception/Inception_42/srcs/nemi
+      o: bind
+      type: none
+
+networks:
+  inception:
+    name: "inception"
+    driver: "bridge"
+
+services:
+  mariadb:
+    container_name: mariadb
+    build:
+      context: ./requirements/mariadb/.
+      args :
+        - db_name=zezzine
+        - db_user=zack
+        - db_pass=123
+    volumes:
+      - mariadb:/var/lib/mysql/
+    env_file: .env
+    networks:
+      - inception
+  wordpress:
+    container_name: wordpress
+    build: 
+      context: ./requirements/wordpress/.
+      args :
+        - db_name=zezzine
+        - db_user=zack
+        - db_pass=123
+        - TITLE=title1
+        - DOMAIN_NAME=zezzine.42.fr
+        - ADMIN_U=name
+        - ADMIN_P=1234
+        - ADMIN_MAIL=zack.zezzine@gmail.com
+        - WP_USR=zack12
+        - PASSWORD_USR=123
+        - WP_EMAIL=zezzine@student.1337.ma
+    depends_on:
+      - mariadb
+    volumes:
+      - wordpress:/var/www/html/
+    env_file: .env
+    networks:
+      - inception
+  nginx:
+    container_name: nginx
+    build: ./requirements/nginx/.
+    ports:
+      - "443:443"
+    depends_on:
+      - wordpress
+    volumes:
+      - wordpress:/var/www/html/
+    networks:
+      - inception
+  redis:
+    container_name: redis
+    build:
+      context: ./requirements/bonus/redis/.
+    ports: 
+      - "6379:6379"
+    networks:
+      - inception
+    depends_on:
+      - wordpress
+    restart: always
+  website-static:
+    container_name: swebsite
+    build:
+      context: ./requirements/bonus/static-web/.
+    ports: 
+      - "2001:2001"
+    networks:
+      - inception
+    restart: always
+  adminer:
+    container_name: adminer
+    build:
+      context: ./requirements/bonus/Adminer/.
+    ports:
+      - "90:90"
+    networks:
+      - inception
