@@ -5,14 +5,14 @@ volumes :
     name: mariadb
     driver: local
     driver_opts:
-      device: /home/zack/Desktop/Inception/Inception_42/srcs/maria
+      device: /workspaces/Inception_42/srcs/maria
       o: bind
       type: none
   wordpress:
     name: wordpress
     driver: local
     driver_opts:
-      device: /home/zack/Desktop/Inception/Inception_42/srcs/wp
+      device: /workspaces/Inception_42/srcs/wp
       o: bind
       type: none
 
@@ -24,7 +24,6 @@ networks:
 services:
   mariadb:
     container_name: mariadb
-    image: mariadb:v1
     build:
       context: ./requirements/mariadb/.
       args :
@@ -75,52 +74,52 @@ services:
     networks:
       - inception
 
-  redis:
-    container_name: redis
-    image: redis:v1
-    build: ./requirements/bonus/redis/.
-    ports: 
-      - "6379:6379"
-    networks:
-      - inception
-    depends_on:
-      - wordpress
-    restart: always
+  # redis:
+  #   container_name: redis
+  #   image: redis:v1
+  #   build: ./requirements/bonus/redis/.
+  #   ports: 
+  #     - "6379:6379"
+  #   networks:
+  #     - inception
+  #   depends_on:
+  #     - wordpress
+  #   restart: always
 
-  website-static:
-    container_name: static-web
-    image: static-web:v1
-    build:
-      context: ./requirements/bonus/static-web/.
-    ports: 
-      - "2001:2001"
-    networks:
-      - inception
-    restart: always
+  # website-static:
+  #   container_name: static-web
+  #   image: static-web:v1
+  #   build:
+  #     context: ./requirements/bonus/static-web/.
+  #   ports: 
+  #     - "2001:2001"
+  #   networks:
+  #     - inception
+  #   restart: always
 
-  cadvisor:
-    container_name: cadvisor
-    image: cadvisor:v1
-    build: 
-      context: ./requirements/bonus/cadvisor/.
-    ports:
-      - "8080:8080"
-    networks:
-      - inception
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro 
-      - /sys:/sys:ro 
-      - /var/lib/docker/:/var/lib/docker:ro
-    restart: always
+  # cadvisor:
+  #   container_name: cadvisor
+  #   image: cadvisor:v1
+  #   build: 
+  #     context: ./requirements/bonus/cadvisor/.
+  #   ports:
+  #     - "8080:8080"
+  #   networks:
+  #     - inception
+  #   volumes:
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:ro 
+  #     - /sys:/sys:ro 
+  #     - /var/lib/docker/:/var/lib/docker:ro
+  #   restart: always
 
-  adminer:
-    container_name: adminer
-    image: adminer:v1
-    build:
-      context: ./requirements/bonus/Adminer/.
-    ports:
-      - "8888:8888"
-    networks:
-      - inception
-    restart: always
+  # adminer:
+  #   container_name: adminer
+  #   image: adminer:v1
+  #   build:
+  #     context: ./requirements/bonus/Adminer/.
+  #   ports:
+  #     - "8888:8888"
+  #   networks:
+  #     - inception
+  #   restart: always
