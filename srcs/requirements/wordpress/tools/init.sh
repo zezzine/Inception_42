@@ -1,8 +1,3 @@
-if [ ! -d "/run/php" ]; then
-	mkdir -p /run/php
-	chown -R www-data:www-data /run/php
-fi
-
 curl -O https://wordpress.org/latest.zip 
 unzip latest.zip 
 rm -rf latest.zip
@@ -15,6 +10,7 @@ cp -R * ../
 cd ..
 rm -rf wordpress
 
+#make www.conf listen to 9000
 mv /www.conf /etc/php/7.3/fpm/pool.d/www.conf
 
 #installing wp-cli
@@ -27,8 +23,15 @@ wp core config --allow-root --dbhost=mariadb --dbname=$db_name --dbuser=$db_user
 wp core install --url=$DOMAIN_NAME/ --title=$TITLE --admin_user=$ADMIN_U --admin_password=$ADMIN_P --admin_email=$ADMIN_MAIL --skip-email --allow-root
 wp user create $WP_USR $WP_EMAIL --role=author --user_pass=$PASSWORD_USR --allow-root
 
-service redis-server start
-cd /etc/redis/
-sed -i 's/supervised no/supervised systemd/' /etc/redis/redis.conf
+chown -R www-data:www-data /var/www/html/
+chmod -R 755 /var/www/html/
+chown -R www-data:www-data /var/www/html/wp-content/
+chmod -R 775 /var/www/html/wp-content/
+
+
+#redis fields
+wp plugin install redis-cache --activate --allow-root
+wp redis enable --allow-root
+wp plugin update --all --allow-root
 
 /usr/sbin/php-fpm7.3 -F -R
