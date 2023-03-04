@@ -1,32 +1,15 @@
-name = inception
-all:
-	@printf "Launch configuration ${name}...\n"
-	@docker-compose -f ./srcs/docker-compose.yml --env-file srcs/.env up -d
-
-build:
-	@printf "Building configuration ${name}...\n"
-	@bash srcs/requirements/wordpress/tools/make_dir.sh
-	@docker-compose -f ./srcs/docker-compose.yml --env-file srcs/.env up -d --build
+DOCKER_COMPOSE_FILE = srcs/docker-compose.yml
+DOCKER_COMPOSE = docker-compose
+up:
+	@printf "\033[32m\033[1mdocker loading ...\033[0m\033[0m\n"
+	@$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) up -d
 
 down:
-	@printf "Stopping configuration ${name}...\n"
-	@docker-compose -f ./srcs/docker-compose.yml --env-file srcs/.env down
+	@$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) down
 
-re: down
-	@printf "Rebuild configuration ${name}...\n"
-	@docker-compose -f ./srcs/docker-compose.yml --env-file srcs/.env up -d --build
+clean:
+	@printf "\033[34m\033[1mdocker stopped and volumes removed ...\033[0m\033[0m\n"
+	$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) down --remove-orphans
+	$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) down -v
 
-clean: down
-	@printf "Cleaning configuration ${name}...\n"
-	@docker system prune -a
-	@sudo rm -rf ~/data
-
-fclean:
-	@printf "Total clean of all configurations docker\n"
-	@docker stop $(docker ps -qa)
-	@docker system prune --all --force --volumes
-	@docker network prune --force
-	@docker volume prune --force
-	@sudo rm -rf ~/data
-
-.PHONY	: all build down re clean fclean
+re : clean up

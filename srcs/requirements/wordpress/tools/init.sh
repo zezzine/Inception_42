@@ -1,3 +1,8 @@
+# if [ ! -d "/run/php" ]; then
+# 	mkdir -p /run/php
+# 	chown -R www-data:www-data /run/php
+# fi
+
 curl -O https://wordpress.org/latest.zip 
 unzip latest.zip 
 rm -rf latest.zip
@@ -10,7 +15,6 @@ cp -R * ../
 cd ..
 rm -rf wordpress
 
-#make www.conf listen to 9000
 mv /www.conf /etc/php/7.3/fpm/pool.d/www.conf
 
 #installing wp-cli

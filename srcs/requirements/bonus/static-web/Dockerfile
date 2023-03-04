@@ -15,7 +15,7 @@ COPY ./tools ./
 RUN npm install express
 
 # Tell that this image is going to Open a Port 
-# EXPOSE 2001
+EXPOSE 2001
 
 # Default Command to launch the Application
 CMD ["npm", "start"]
